@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OceanSweep · 해양 쓰레기 수거 모빌리티</title>
+<style>
+  :root{
+    --bg:#070d18; --bg2:#0b1424; --panel:#101c30; --panel2:#152238;
+    --line:#1c2d4a; --line2:#2a4066;
+    --txt:#eaf2fd; --muted:#93a8c8; --muted2:#617699;
+    --accent:#3d8bff; --accent2:#66b3ff; --glow:#7cc0ff;
+    --cyan:#2fe6d6; --green:#2ee6a0; --amber:#ffc24b;
+    --grad:linear-gradient(135deg,#3d8bff,#66d0ff);
+    --grad2:linear-gradient(135deg,#2fe6d6,#3d8bff);
+    --radius:18px;
+    --maxw:1140px;
+    --shadow:0 18px 50px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html{scroll-behavior:smooth;scroll-padding-top:74px;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo",Roboto,"Malgun Gothic",sans-serif;
+    color:var(--txt);
+    background:
+      radial-gradient(1200px 720px at 82% -8%, rgba(61,139,255,.16), transparent 60%),
+      radial-gradient(1000px 640px at -10% 108%, rgba(47,230,214,.10), transparent 55%),
+      var(--bg);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+  section{position:relative;}
+
+  /* ===== Nav ===== */
+  header.nav{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:blur(12px);
+    background:linear-gradient(180deg,rgba(9,15,26,.92),rgba(9,15,26,.55));
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{display:flex;align-items:center;gap:14px;height:64px;}
+  .logo{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.2px;}
+  .logo .mark{width:36px;height:36px;border-radius:11px;background:var(--grad);
+    display:grid;place-items:center;box-shadow:0 0 20px rgba(61,139,255,.55);}
+  .logo .mark svg{width:21px;height:21px;}
+  .logo b{font-size:17px;line-height:1;}
+  .logo span{display:block;color:var(--muted);font-size:10.5px;font-weight:600;margin-top:2px;letter-spacing:.4px;}
+  .nav-links{margin-left:auto;display:flex;gap:6px;align-items:center;}
+  .nav-links a{padding:9px 14px;border-radius:10px;font-size:13.5px;font-weight:600;color:var(--muted);transition:.18s;}
+  .nav-links a:hover{color:var(--txt);background:var(--panel);}
+  .nav-cta{background:var(--grad)!important;color:#04122b!important;font-weight:800!important;
+    box-shadow:0 0 20px rgba(61,139,255,.4);}
+  .burger{display:none;margin-left:auto;background:var(--panel);border:1px solid var(--line2);
+    color:var(--txt);width:42px;height:42px;border-radius:11px;font-size:18px;cursor:pointer;}
+  @media(max-width:860px){
+    .nav-links{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;
+      background:var(--bg2);border-bottom:1px solid var(--line);padding:12px;gap:4px;}
+    .nav-links.open{display:flex;}
+    .nav-links a{padding:13px 16px;}
+    .burger{display:block;}
+  }
+
+  /* ===== Hero ===== */
+  .hero{padding:70px 0 40px;overflow:hidden;}
+  .hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;
+    border:1px solid var(--line2);background:var(--panel);font-size:12.5px;font-weight:700;color:var(--cyan);margin-bottom:20px;}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.8s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .hero h1{font-size:clamp(34px,5vw,54px);line-height:1.1;margin:0 0 18px;font-weight:850;letter-spacing:-.5px;}
+  .hero h1 .g{background:var(--grad2);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p.lead{font-size:clamp(15px,2vw,18px);color:var(--muted);margin:0 0 30px;max-width:520px;}
+  .hero-btns{display:flex;gap:12px;flex-wrap:wrap;}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:14px 24px;border-radius:13px;
+    font-weight:800;font-size:14.5px;cursor:pointer;border:1px solid transparent;transition:.2s;}
+  .btn.primary{background:var(--grad);color:#04122b;box-shadow:0 12px 32px rgba(61,139,255,.35);}
+  .btn.primary:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(61,139,255,.5);}
+  .btn.ghost{background:var(--panel);border-color:var(--line2);color:var(--txt);}
+  .btn.ghost:hover{border-color:var(--accent);color:var(--accent2);}
+  .hero-kpis{display:flex;gap:28px;margin-top:38px;flex-wrap:wrap;}
+  .hero-kpis .k b{display:block;font-size:26px;font-weight:850;background:var(--grad2);
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero-kpis .k span{font-size:12.5px;color:var(--muted2);font-weight:600;}
+
+  /* Robot illustration */
+  .robot-stage{position:relative;display:grid;place-items:center;min-height:340px;}
+  .robot-stage::before{content:"";position:absolute;width:78%;height:78%;border-radius:50%;
+    background:radial-gradient(closest-side,rgba(61,139,255,.28),transparent 70%);filter:blur(10px);}
+  .robot-stage svg{width:100%;max-width:460px;position:relative;filter:drop-shadow(0 30px 40px rgba(0,0,0,.55));}
+  .float{animation:float 6s ease-in-out infinite;}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  .led{animation:led 2.4s ease-in-out infinite;}
+  @keyframes led{0%,100%{opacity:.4}50%{opacity:1}}
+
+  /* ===== Section shell ===== */
+  .sec{padding:82px 0;}
+  .sec-head{max-width:640px;margin:0 auto 52px;text-align:center;}
+  .tag{display:inline-block;font-size:12.5px;font-weight:800;letter-spacing:1.5px;color:var(--cyan);
+    text-transform:uppercase;margin-bottom:14px;}
+  .sec-head h2{font-size:clamp(26px,3.6vw,38px);margin:0 0 14px;font-weight:850;letter-spacing:-.4px;}
+  .sec-head p{color:var(--muted);margin:0;font-size:15.5px;}
+  .alt{background:linear-gradient(180deg,transparent,rgba(11,20,36,.6),transparent);}
+
+  /* ===== Feature cards (제품 소개) ===== */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .card{background:linear-gradient(180deg,var(--panel),rgba(16,28,48,.6));border:1px solid var(--line);
+    border-radius:var(--radius);padding:28px 24px;transition:.25s;position:relative;overflow:hidden;}
+  .card:hover{transform:translateY(-5px);border-color:var(--line2);box-shadow:var(--shadow);}
+  .card .ico{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;margin-bottom:18px;
+    background:rgba(61,139,255,.12);border:1px solid rgba(61,139,255,.25);}
+  .card .ico svg{width:26px;height:26px;stroke:var(--accent2);}
+  .card h3{margin:0 0 9px;font-size:17.5px;font-weight:800;}
+  .card p{margin:0;color:var(--muted);font-size:14px;}
+
+  /* ===== Process (작동 방식) ===== */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;counter-reset:s;}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:26px 22px;position:relative;}
+  .step::before{counter-increment:s;content:"0" counter(s);position:absolute;top:20px;right:22px;
+    font-size:34px;font-weight:850;color:rgba(61,139,255,.16);letter-spacing:-1px;}
+  .step .sico{width:46px;height:46px;border-radius:12px;background:var(--grad);display:grid;place-items:center;margin-bottom:16px;box-shadow:0 0 18px rgba(61,139,255,.4);}
+  .step .sico svg{width:24px;height:24px;stroke:#04122b;}
+  .step h4{margin:0 0 8px;font-size:16px;font-weight:800;}
+  .step p{margin:0;color:var(--muted);font-size:13.5px;}
+  .flow-line{height:2px;background:linear-gradient(90deg,transparent,var(--accent),var(--cyan),transparent);
+    margin:34px auto 0;max-width:70%;opacity:.5;}
+
+  /* ===== Live stats (실시간 성과) ===== */
+  .stats-band{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+  .stat-cell{background:var(--panel);padding:34px 22px;text-align:center;}
+  .stat-cell .num{font-size:clamp(30px,4vw,44px);font-weight:850;line-height:1;
+    background:var(--grad2);-webkit-background-clip:text;background-clip:text;color:transparent;
+    font-variant-numeric:tabular-nums;}
+  .stat-cell .num small{font-size:16px;-webkit-text-fill-color:var(--muted);margin-left:3px;}
+  .stat-cell .lbl{margin-top:12px;color:var(--muted);font-size:13.5px;font-weight:600;}
+  .live-cta{margin-top:32px;display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap;}
+  .live-badge{display:inline-flex;align-items:center;gap:8px;color:var(--green);font-weight:700;font-size:13.5px;}
+
+  /* ===== Tech (기술 소개) ===== */
+  .tech-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  .tech{background:linear-gradient(180deg,var(--panel),rgba(16,28,48,.5));border:1px solid var(--line);
+    border-radius:var(--radius);padding:30px;}
+  .tech .th{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+  .tech .th .bico{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;flex-shrink:0;
+    background:rgba(47,230,214,.1);border:1px solid rgba(47,230,214,.25);}
+  .tech .th .bico svg{width:25px;height:25px;stroke:var(--cyan);}
+  .tech .th h3{margin:0;font-size:19px;font-weight:850;}
+  .tech .th span{color:var(--muted2);font-size:12.5px;font-weight:600;}
+  .tech ul{list-style:none;margin:0;padding:0;}
+  .tech li{display:flex;gap:11px;padding:9px 0;border-top:1px solid var(--line);color:var(--muted);font-size:14px;}
+  .tech li:first-child{border-top:none;}
+  .tech li .chk{color:var(--accent2);flex-shrink:0;font-weight:900;}
+  .tech li b{color:var(--txt);font-weight:700;}
+
+  /* ===== Vision (미래 비전) ===== */
+  .vision{background:
+      radial-gradient(700px 380px at 20% 0%,rgba(47,230,214,.14),transparent 60%),
+      linear-gradient(135deg,rgba(16,28,48,.9),rgba(11,20,36,.9));
+    border:1px solid var(--line2);border-radius:26px;padding:56px 44px;text-align:center;}
+  .vision h2{font-size:clamp(24px,3.4vw,36px);margin:0 0 16px;font-weight:850;letter-spacing:-.4px;}
+  .vision h2 .g{background:var(--grad2);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .vision p{color:var(--muted);max-width:600px;margin:0 auto 34px;font-size:15.5px;}
+  .goals{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:8px;}
+  .goal{text-align:left;background:rgba(9,15,26,.5);border:1px solid var(--line);border-radius:var(--radius);padding:24px;}
+  .goal .gnum{font-size:30px;font-weight:850;background:var(--grad2);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .goal h4{margin:8px 0 6px;font-size:15.5px;font-weight:800;}
+  .goal p{margin:0;color:var(--muted);font-size:13.5px;max-width:none;}
+
+  /* ===== Footer ===== */
+  footer{border-top:1px solid var(--line);margin-top:80px;padding:40px 0;}
+  .foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;color:var(--muted2);font-size:13px;}
+  .foot .logo b{font-size:15px;}
+
+  @media(max-width:920px){
+    .cards,.steps,.tech-grid,.goals{grid-template-columns:1fr 1fr;}
+    .stats-band{grid-template-columns:1fr 1fr;}
+  }
+  @media(max-width:760px){
+    .hero-grid{grid-template-columns:1fr;gap:10px;}
+    .robot-stage{order:-1;min-height:280px;}
+    .cards,.steps,.tech-grid,.goals,.stats-band{grid-template-columns:1fr;}
+    .step::before{font-size:28px;}
+    .vision{padding:40px 24px;}
+    .sec{padding:60px 0;}
+  }
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(24px);transition:.7s cubic-bezier(.2,.7,.2,1);}
+  .reveal.in{opacity:1;transform:none;}
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="logo">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 15c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2" stroke="#04122b" stroke-width="2.2" stroke-linecap="round"/><path d="M6 9.5c1.2 0 1.2-1.5 2.5-1.5S9.8 9.5 11 9.5s1.2-1.5 2.5-1.5S14.8 9.5 16 9.5" stroke="#04122b" stroke-width="2" stroke-linecap="round" opacity=".55"/></svg></span>
+      <span>
+        <b>OceanSweep</b>
+        <span>해양 쓰레기 수거 모빌리티</span>
+      </span>
+    </div>
+    <button class="burger" onclick="document.getElementById('navlinks').classList.toggle('open')">☰</button>
+    <nav class="nav-links" id="navlinks">
+      <a href="#product">제품 소개</a>
+      <a href="#how">작동 방식</a>
+      <a href="#live">실시간 성과</a>
+      <a href="#tech">기술 소개</a>
+      <a href="#vision">미래 비전</a>
+      <a href="dashboard.html" class="nav-cta">관제 시스템 →</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow"><span class="dot"></span>자율 운항 · 실시간 수거 모빌리티</span>
+      <h1>바다를 스스로 청소하는<br><span class="g">해양 로봇</span></h1>
+      <p class="lead">OceanSweep는 연안과 항만을 자율 주행하며 부유 쓰레기와 오물을 실시간으로 포집·분류하는 친환경 청소 모빌리티입니다. 사람의 손이 닿기 어려운 수면 위 오염을 24시간 순찰하며 수거합니다.</p>
+      <div class="hero-btns">
+        <a href="#how" class="btn primary">작동 방식 보기
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="#04122b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="dashboard.html" class="btn ghost">실시간 관제 열기</a>
+      </div>
+      <div class="hero-kpis">
+        <div class="k"><b>142.6kg</b><span>오늘 수거량</span></div>
+        <div class="k"><b>24/7</b><span>자율 순찰</span></div>
+        <div class="k"><b>98%</b><span>포집 정확도</span></div>
+      </div>
+    </div>
+
+    <!-- Robot SVG (사진 기반 스타일) -->
+    <div class="robot-stage">
+      <svg class="float" viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#c7d3e2"/>
+          </linearGradient>
+          <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#cfe4ff"/><stop offset="1" stop-color="#5f83b8"/>
+          </linearGradient>
+          <linearGradient id="dark" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2a3444"/><stop offset="1" stop-color="#141a24"/>
+          </linearGradient>
+        </defs>
+        <!-- rear body -->
+        <path d="M60 210 Q60 120 150 118 L250 118 Q300 118 300 210 L300 250 Q300 262 288 262 L72 262 Q60 262 60 250 Z" fill="url(#body)"/>
+        <rect x="92" y="150" width="52" height="26" rx="6" fill="url(#dark)"/>
+        <!-- front collection module -->
+        <path d="M250 150 Q250 120 300 120 L360 120 Q420 120 420 190 L420 250 Q420 264 406 264 L262 264 Q250 264 250 252 Z" fill="url(#body)"/>
+        <rect x="270" y="150" width="132" height="96" rx="16" fill="url(#glass)" stroke="#8fb4e6" stroke-width="2"/>
+        <!-- LED bar -->
+        <g class="led">
+          <rect x="286" y="140" width="14" height="6" rx="3" fill="#8fd0ff"/>
+          <rect x="312" y="140" width="14" height="6" rx="3" fill="#8fd0ff"/>
+          <rect x="338" y="140" width="14" height="6" rx="3" fill="#8fd0ff"/>
+          <rect x="364" y="140" width="14" height="6" rx="3" fill="#8fd0ff"/>
+        </g>
+        <!-- camera module -->
+        <rect x="300" y="96" width="104" height="40" rx="12" fill="url(#dark)"/>
+        <rect x="316" y="108" width="16" height="16" rx="4" fill="none" stroke="#7cc0ff" stroke-width="1.6" stroke-dasharray="2 3"/>
+        <circle cx="352" cy="116" r="9" fill="#0c1420" stroke="#7cc0ff" stroke-width="2"/>
+        <circle cx="352" cy="116" r="4" fill="#3d8bff"/>
+        <rect x="372" y="108" width="16" height="16" rx="4" fill="none" stroke="#7cc0ff" stroke-width="1.6" stroke-dasharray="2 3"/>
+        <!-- treads -->
+        <g>
+          <rect x="44" y="216" width="46" height="70" rx="12" fill="url(#dark)"/>
+          <rect x="60" y="230" width="6" height="42" rx="3" fill="#3d8bff" class="led"/>
+          <rect x="392" y="216" width="52" height="70" rx="12" fill="url(#dark)"/>
+          <rect x="412" y="230" width="6" height="42" rx="3" fill="#3d8bff" class="led"/>
+        </g>
+        <!-- side accent -->
+        <rect x="228" y="180" width="8" height="56" rx="4" fill="#3d8bff" class="led"/>
+        <!-- water ripple -->
+        <path d="M20 296 Q90 288 160 296 T300 296 T440 296" stroke="#2fe6d6" stroke-width="2" fill="none" opacity=".5"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 1. 제품 소개 ===== -->
+<section class="sec" id="product">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="tag">Product · 제품 소개</span>
+      <h2>바다 위를 순찰하는 자율 청소 로봇</h2>
+      <p>OceanSweep는 부유 쓰레기 포집에 특화된 소형 자율 수상 모빌리티입니다. 견고한 방수 바디와 저소음 추진체로 해양 생태계를 방해하지 않고 조용히 오염을 걷어냅니다.</p>
+    </div>
+    <div class="cards">
+      <div class="card reveal">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M6 6l1.4 1.4M16.6 16.6L18 18M18 6l-1.4 1.4M7.4 16.6L6 18" stroke-linecap="round"/></svg></div>
+        <h3>완전 자율 운항</h3>
+        <p>GPS·라이다·비전 센서로 경로를 스스로 설계하고, 장애물과 선박을 회피하며 24시간 무인 순찰합니다.</p>
+      </div>
+      <div class="card reveal">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 14h16l-2 6H6l-2-6Z" stroke-linejoin="round"/><path d="M8 14V9a4 4 0 0 1 8 0v5" /></svg></div>
+        <h3>대용량 포집함</h3>
+        <p>전면 개방형 스쿠프가 수면 위 쓰레기를 걷어 올려 내부 저장함에 적재. 1회 운항당 최대 60kg까지 수거합니다.</p>
+      </div>
+      <div class="card reveal">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7l7-4Z" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>친환경 무공해 구동</h3>
+        <p>전기 배터리 기반 무배출 구동. 태양광 보조 충전으로 운영 중 탄소를 배출하지 않습니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 2. 작동 방식 ===== -->
+<section class="sec alt" id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="tag">How it works · 작동 방식</span>
+      <h2>쓰레기는 이렇게 수거됩니다</h2>
+      <p>감지부터 저장까지 네 단계로 자동화된 수거 프로세스. 사람의 개입 없이 순찰 중 실시간으로 반복됩니다.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="sico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.2-3.2" stroke-linecap="round"/></svg></div>
+        <h4>1. 감지 · 인식</h4>
+        <p>전방 카메라와 AI 비전이 수면의 부유 쓰레기를 실시간 탐지하고 위치를 계산합니다.</p>
+      </div>
+      <div class="step reveal">
+        <div class="sico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h4>2. 접근 · 정렬</h4>
+        <p>양측 추진체가 대상 방향으로 로봇을 정밀 조향해 포집구를 쓰레기에 정렬합니다.</p>
+      </div>
+      <div class="step reveal">
+        <div class="sico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9"><path d="M4 13h16l-2 6H6l-2-6Z" stroke-linejoin="round"/><path d="M8 13V9a4 4 0 0 1 8 0v4"/></svg></div>
+        <h4>3. 포집 · 인양</h4>
+        <p>전면 스쿠프와 흡입 벨트가 물과 쓰레기를 함께 걷어 올리며 물은 하부로 배출합니다.</p>
+      </div>
+      <div class="step reveal">
+        <div class="sico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V5a3 3 0 0 1 6 0v2" /></svg></div>
+        <h4>4. 분류 · 저장</h4>
+        <p>수거물을 종류별로 분류해 내부 저장함에 적재하고, 수거량을 관제 서버로 전송합니다.</p>
+      </div>
+    </div>
+    <div class="flow-line"></div>
+  </div>
+</section>
+
+<!-- ===== 3. 실시간 성과 ===== -->
+<section class="sec" id="live">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="tag">Live · 실시간 성과</span>
+      <h2>지금, 바다에서 일어나는 일</h2>
+      <p>운항 중인 로봇의 수거량과 운영 지표가 실시간으로 집계됩니다. 자세한 현황은 관제 시스템에서 확인하세요.</p>
+    </div>
+    <div class="stats-band reveal">
+      <div class="stat-cell"><div class="num" data-count="142.6" data-dec="1">0<small>kg</small></div><div class="lbl">오늘 누적 수거량</div></div>
+      <div class="stat-cell"><div class="num" data-count="2.25" data-dec="2">0<small>h</small></div><div class="lbl">금일 운항 시간</div></div>
+      <div class="stat-cell"><div class="num" data-count="1284" data-dec="0">0<small>회</small></div><div class="lbl">누적 포집 횟수</div></div>
+      <div class="stat-cell"><div class="num" data-count="8.4" data-dec="1">0<small>t</small></div><div class="lbl">월간 총 수거량</div></div>
+    </div>
+    <div class="live-cta">
+      <span class="live-badge"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);display:inline-block"></span>자율 운항 중 · 실시간 연동</span>
+      <a href="dashboard.html" class="btn primary">실시간 관제 시스템 열기
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="#04122b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 4. 기술 소개 ===== -->
+<section class="sec alt" id="tech">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="tag">Technology · 기술 소개</span>
+      <h2>추진체와 포집 구조</h2>
+      <p>바다에서의 안정성과 수거 효율을 동시에 잡기 위해 설계된 핵심 하드웨어 구조입니다.</p>
+    </div>
+    <div class="tech-grid">
+      <div class="tech reveal">
+        <div class="th">
+          <span class="bico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 4v4M12 16v4M4 12h4M16 12h4" stroke-linecap="round"/><path d="M6.5 6.5l2 2M15.5 15.5l2 2M17.5 6.5l-2 2M8.5 15.5l-2 2" stroke-linecap="round"/></svg></span>
+          <div><h3>듀얼 추진체</h3><span>Propulsion System</span></div>
+        </div>
+        <ul>
+          <li><span class="chk">✓</span><span><b>양측 독립 워터젯</b> — 좌우 개별 추력으로 제자리 회전·정밀 조향</span></li>
+          <li><span class="chk">✓</span><span><b>저소음 무공해 모터</b> — 해양 생물 스트레스 최소화</span></li>
+          <li><span class="chk">✓</span><span><b>이물질 자동 감지</b> — 추진체 걸림을 실시간 진단·경보</span></li>
+          <li><span class="chk">✓</span><span><b>내파성 설계</b> — 파고 대응 밸런싱으로 전복 방지</span></li>
+        </ul>
+      </div>
+      <div class="tech reveal">
+        <div class="th">
+          <span class="bico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 13h16l-2 7H6l-2-7Z" stroke-linejoin="round"/><path d="M8 13V8a4 4 0 0 1 8 0v5"/><path d="M12 3v2" stroke-linecap="round"/></svg></span>
+          <div><h3>포집 · 분류 구조</h3><span>Collection Module</span></div>
+        </div>
+        <ul>
+          <li><span class="chk">✓</span><span><b>전면 개방 스쿠프</b> — 수면 부유물을 넓게 걷어 인양</span></li>
+          <li><span class="chk">✓</span><span><b>수분 배출 컨베이어</b> — 물은 빼고 쓰레기만 저장</span></li>
+          <li><span class="chk">✓</span><span><b>AI 분류 센서</b> — 플라스틱·부유물·오일 자동 구분</span></li>
+          <li><span class="chk">✓</span><span><b>탈착식 저장함</b> — 만재 시 컨테이너 교체로 연속 운영</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 5. 미래 비전 ===== -->
+<section class="sec" id="vision">
+  <div class="wrap">
+    <div class="vision reveal">
+      <span class="tag">Vision · 미래 비전</span>
+      <h2>깨끗한 바다를 <span class="g">기술로 되돌립니다</span></h2>
+      <p>OceanSweep의 목표는 단순한 청소가 아닙니다. 해양 오염 데이터를 축적하고, 수거 로봇 군집을 확장해 연안 생태계를 지속적으로 회복시키는 것입니다.</p>
+      <div class="goals">
+        <div class="goal">
+          <div class="gnum">2027</div>
+          <h4>전국 항만 확대</h4>
+          <p>주요 연안·항만 30곳에 자율 수거 로봇 군집을 배치합니다.</p>
+        </div>
+        <div class="goal">
+          <div class="gnum">Zero</div>
+          <h4>무탄소 운영</h4>
+          <p>태양광·전기 구동으로 운영 전 과정에서 탄소 배출 제로를 지향합니다.</p>
+        </div>
+        <div class="goal">
+          <div class="gnum">100%</div>
+          <h4>자원 순환</h4>
+          <p>수거한 해양 쓰레기를 분류·재활용해 자원으로 되돌립니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap foot">
+    <div class="logo">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 15c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2" stroke="#04122b" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+      <span><b>OceanSweep</b><span>해양 쓰레기 수거 모빌리티</span></span>
+    </div>
+    <div>© 2026 OceanSweep · 깨끗한 바다를 위한 자율 청소 로봇</div>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.14});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // Close mobile menu on link click
+  document.querySelectorAll('#navlinks a').forEach(a=>a.addEventListener('click',()=>{
+    document.getElementById('navlinks').classList.remove('open');
+  }));
+
+  // Count-up stats
+  function animateCount(el){
+    const target=parseFloat(el.dataset.count), dec=parseInt(el.dataset.dec);
+    const small=el.querySelector('small')?.outerHTML||'';
+    let start=null, dur=1400;
+    function tick(ts){
+      if(!start)start=ts;
+      const p=Math.min((ts-start)/dur,1);
+      const eased=1-Math.pow(1-p,3);
+      const val=(target*eased).toFixed(dec);
+      el.innerHTML=Number(val).toLocaleString('ko-KR',{minimumFractionDigits:dec,maximumFractionDigits:dec})+small;
+      if(p<1)requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  const statIO=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ animateCount(e.target); statIO.unobserve(e.target);} });
+  },{threshold:.5});
+  document.querySelectorAll('.num[data-count]').forEach(el=>statIO.observe(el));
+</script>
+</body>
+</html>

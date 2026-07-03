@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ggulguk",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4787"],
+      "port": 4787
+    }
+  ]
+}
